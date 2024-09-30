@@ -1,0 +1,106 @@
+<html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahorcado - Gravimetría</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        #hangman {
+            width: 100px;
+            height: 200px;
+            margin: 0 auto;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Gallows.svg/1200px-Gallows.svg.png') no-repeat center;
+            background-size: contain;
+            position: relative;
+        }
+        .head, .body, .left-arm, .right-arm, .left-leg, .right-leg {
+            position: absolute;
+            background-color: black;
+        }
+        .head { width: 30px; height: 30px; border-radius: 50%; top: 20px; left: 35px; }
+        .body { width: 10px; height: 60px; top: 60px; left: 45px; }
+        .left-arm { width: 10px; height: 40px; top: 60px; left: 30px; }
+        .right-arm { width: 10px; height: 40px; top: 60px; left: 55px; }
+        .left-leg { width: 10px; height: 40px; top: 120px; left: 40px; }
+        .right-leg { width: 10px; height: 40px; top: 120px; left: 50px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ahorcado</h1>
+        <p>Palabra: <span id="wordDisplay"></span></p>
+        <p>Letras incorrectas: <span id="wrongLetters"></span></p>
+        <div id="hangman"></div>
+        <input type="text" id="letterInput" maxlength="1" />
+        <button id="guessButton">Adivinar</button>
+        <p id="message"></p>
+    </div>
+    <script>
+        const word = "gravimetria";
+        let guessedWord = Array(word.length).fill('_');
+        let wrongLetters = [];
+        const maxAttempts = 5;
+
+        document.getElementById('wordDisplay').innerText = guessedWord.join(' ');
+        document.getElementById('wrongLetters').innerText = '';
+
+        document.getElementById('guessButton').addEventListener('click', () => {
+            const letterInput = document.getElementById('letterInput');
+            const letter = letterInput.value.toLowerCase();
+            letterInput.value = '';
+
+            if (letter && !wrongLetters.includes(letter) && !guessedWord.includes(letter)) {
+                if (word.includes(letter)) {
+                    for (let i = 0; i < word.length; i++) {
+                        if (word[i] === letter) {
+                            guessedWord[i] = letter;
+                        }
+                    }
+                    document.getElementById('wordDisplay').innerText = guessedWord.join(' ');
+                    document.getElementById('message').innerText = '';
+                } else {
+                    wrongLetters.push(letter);
+                    document.getElementById('wrongLetters').innerText = wrongLetters.join(', ');
+                    drawHangman();
+
+                    if (wrongLetters.length > maxAttempts) {
+                        document.getElementById('message').innerText = '¡Perdiste! La palabra era: ' + word;
+                        endGame();
+                    }
+                }
+            }
+        });
+
+        function drawHangman() {
+            const hangman = document.getElementById('hangman');
+
+            if (wrongLetters.length === 1) {
+                hangman.innerHTML += '<div class="head"></div>';
+            } else if (wrongLetters.length === 2) {
+                hangman.innerHTML += '<div class="body"></div>';
+            } else if (wrongLetters.length === 3) {
+                hangman.innerHTML += '<div class="left-arm"></div>';
+            } else if (wrongLetters.length === 4) {
+                hangman.innerHTML += '<div class="right-arm"></div>';
+            } else if (wrongLetters.length === 5) {
+                hangman.innerHTML += '<div class="left-leg"></div>';
+            } else if (wrongLetters.length === 6) {
+                hangman.innerHTML += '<div class="right-leg"></div>';
+            }
+        }
+
+        function endGame() {
+            document.getElementById('letterInput').disabled = true;
+            document.getElementById('guessButton').disabled = true;
+        }
+    </script>
+</body>
+</html>
